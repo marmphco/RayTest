@@ -30,7 +30,7 @@ public class Sphere implements RenderObject
     public Vector3 normalAtPoint(Vector3 point) //assuming point is on sphere. should there be error checks here, or outside this?
     {
         
-        return new Vector3();//psuedo (point minus position).normalize();
+        return point.subtract(position).normalize();//psuedo (point minus position).normalize();
         
     }
 

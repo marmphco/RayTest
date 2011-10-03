@@ -2,20 +2,20 @@ import java.io.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.*;
 import java.util.ArrayList;
-//testing push OMG ROFL
+
 public class RayTest
 {
 	public static void main(String[] args) throws IOException
 	{
 		int width = 640, height = 480;
 		double aspect = (double)width / (double)height;
+		
+		Vector3 camerapos = new Vector3(0, 0, -5);
+		Vector3 lightpos = new Vector3(0, -10, 0);
 		double planeSize = 5;
-		double trololo = Math.sqrt(-1);
-		System.out.println(trololo);
 		
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		
-		Vector3 camerapos = new Vector3(0, 0, -5);
 		ArrayList<RenderObject> renderObjects = new ArrayList<RenderObject>();
 		renderObjects.add(new Sphere(new Vector3(1, 1 , 10), 5));
 		
@@ -38,7 +38,18 @@ public class RayTest
 					}
 					else
 					{
-						color = new Vector3(0, 0, 255);
+						double distance = lightpos.subtract(intersection).magnitude();
+						double attenuation = 1.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance);
+						
+						Vector3 light = lightpos.subtract(intersection).normalize();
+						Vector3 camera = camerapos.subtract(intersection).normalize();
+						Vector3 halfv = light.add(camera).normalize();
+						Vector3 normal = r.normalAtPoint(intersection);
+						
+						double dvalue = Math.max(0.0, light.dot(normal)) * attenuation;
+						double svalue = Math.pow(Math.max(0.0, halfv.dot(normal)), 50.0);
+						
+						color = new Vector3(svalue * 127 + dvalue * 128);
 					}
 				
 				}

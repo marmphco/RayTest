@@ -177,7 +177,7 @@ public class Vector3
         double zComponent = z * inverseLength;
         return new Vector3(xComponent, yComponent, zComponent);
     }
-    public Vector3 normalize(Vector3 _vector)
+    public static Vector3 normalize(Vector3 _vector)
     {
         double inverseLength = 1.0 / magnitude(_vector);
         double xComponent = _vector.x * inverseLength;
