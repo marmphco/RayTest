@@ -14,7 +14,7 @@ public class RayTest
 		Vector3 lightpos = new Vector3(0, -10, 0);
 		double planeSize = 5;
 		
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		
 		ArrayList<RenderObject> renderObjects = new ArrayList<RenderObject>();
 		renderObjects.add(new Sphere(new Vector3(1, 1 , 10), 5));
@@ -54,19 +54,27 @@ public class RayTest
 				
 				}
 				
-				image.setRGB(x, y, (255 << 24) | ((int)color.x << 16) | ((int)color.y << 8) | ((int)color.z << 0));
+				buffer.setRGB(x, y, (255 << 24) | ((int)color.x << 16) | ((int)color.y << 8) | ((int)color.z << 0));
 			}
 		}
 		
+		saveImage(buffer, "RayTest.png");
+		
+	}
+	
+	public static boolean saveImage(BufferedImage image, String fileName)
+	{	
 		try 
 		{
-			File file = new File("RayTest.png");
+			File file = new File(fileName);
 			ImageIO.write(image, "png", file);
+			return true;
 		}
 		catch(IOException e) 
 		{
 			System.out.println("Unable to write image, sorry.");
+			return false;
 		}
-		
 	}
+	
 }
