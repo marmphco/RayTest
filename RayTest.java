@@ -31,7 +31,7 @@ public class RayTest
 				for(RenderObject r : renderObjects)
 				{
 					
-					Vector3 intersection = r.intersectionWithRay(cameradir);
+					Vector3 intersection = r.intersectionWithRay(cameradir, camerapos);
 					if(new Double(intersection.x).isNaN()) 
 					{
 						
@@ -39,7 +39,7 @@ public class RayTest
 					else
 					{
 						double distance = lightpos.subtract(intersection).magnitude();
-						double attenuation = 1.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance);
+						double attenuation = 4.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance);
 						
 						Vector3 light = lightpos.subtract(intersection).normalize();
 						Vector3 camera = camerapos.subtract(intersection).normalize();

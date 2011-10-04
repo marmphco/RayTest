@@ -16,21 +16,21 @@ public class Sphere implements RenderObject
         radius = _radius;
     }
     
-    public Vector3 intersectionWithRay(Vector3 ray) //assuming ray is normalized. should this be internally or externally?
+    public Vector3 intersectionWithRay(Vector3 ray, Vector3 rayOrigin)
     {
+     
+        Vector3 dist = position.subtract(rayOrigin);
+        double dot = Vector3.dot(ray, dist);
+        double d = dot-Math.sqrt(dot*dot-dist.dot(dist)+radius*radius);
         
-        double posLen = position.magnitude();
-        double dot = Vector3.dot(ray, position);
-        double d = dot-Math.sqrt(dot*dot-posLen*posLen+radius*radius); //shamelessly copied formula.
-        
-        return new Vector3(ray.x*d, ray.y*d, ray.z*d);
+        return new Vector3(rayOrigin.x+ray.x*d, rayOrigin.y+ray.y*d, rayOrigin.z+ray.z*d);
         
     }
     
     public Vector3 normalAtPoint(Vector3 point) //assuming point is on sphere. should there be error checks here, or outside this?
     {
         
-        return point.subtract(position).normalize();//psuedo (point minus position).normalize();
+        return point.subtract(position).normalize();
         
     }
 
