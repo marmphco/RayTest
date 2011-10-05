@@ -16,14 +16,15 @@ public class Sphere implements RenderObject
         radius = _radius;
     }
     
-    public Vector3 intersectionWithRay(Vector3 ray, Vector3 rayOrigin)
+    public double intersectionDepth(Vector3 ray, Vector3 rayOrigin)
     {
      
         Vector3 dist = position.subtract(rayOrigin);
         double dot = Vector3.dot(ray, dist);
-        double d = dot-Math.sqrt(dot*dot-dist.dot(dist)+radius*radius);
-        
-        return new Vector3(rayOrigin.x+ray.x*d, rayOrigin.y+ray.y*d, rayOrigin.z+ray.z*d);
+		double determinant = dot*dot-dist.dot(dist)+radius*radius;
+		
+		if (determinant <= 0) {return 0;}
+        else {return dot-Math.sqrt(determinant);}
         
     }
     
