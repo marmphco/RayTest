@@ -2,10 +2,12 @@ public class PointLight implements Light {
 
     Vector3 position;
     double intensity;
+    Vector3 color;
     
-	public PointLight(Vector3 _position, double _intensity) {
+	public PointLight(Vector3 _position, Vector3 _color, double _intensity) {
 		
 		position = _position;
+		color = _color;
         intensity = _intensity;
 		
 	}
@@ -17,9 +19,9 @@ public class PointLight implements Light {
         
     }
 	
-	public Vector3 colorAtPoint(Vector3 point) {
+	public Vector3 colorIntensityAtPoint(Vector3 point) {
 		
-		return new Vector3(1, 1, 1); //temp
+		return color.scale(intensityAtPoint(point)); //temp
 		
 	}
 	

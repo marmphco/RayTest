@@ -11,8 +11,6 @@ public class RayTest
 		double aspect = (double)width / (double)height;
 		
 		Vector3 camerapos = new Vector3(0, 0, -5);
-		//Vector3 lightpos = new Vector3(0, -10, 0);
-        //PointLight light = new PointLight(new Vector3(0, -10, 0), 100);
         
 		double planeSize = 5;
 		
@@ -24,8 +22,9 @@ public class RayTest
 		renderObjects.add(new Sphere(new Vector3(0, -1 , 15), 5));
         
         ArrayList<Light> lights = new ArrayList<Light>();
-        lights.add(new PointLight(new Vector3(0, -10, 0), 100));
-        lights.add(new PointLight(new Vector3(5, 10, 0), 100)); //this light is causing some interesting specular artifacts
+        lights.add(new PointLight(new Vector3(0, -10, 0), new Vector3(.5, 1, .5), 100));
+        lights.add(new PointLight(new Vector3(5, 10, 0), new Vector3(1, .5, .5), 100));
+        lights.add(new PointLight(new Vector3(-5, 5, 0), new Vector3(.5, .5, 1), 100));
 		
 		double[][] depthBuffer = new double[width][height];
 		 
@@ -53,6 +52,7 @@ public class RayTest
 				double xPos = (double)(x - width/2) * aspect * planeSize / (double)(width/2);
 				double yPos = (double)(y - height/2) * planeSize / (double)(height/2);
 				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(camerapos).normalize();
+				
 				Vector3 color = new Vector3();
 				
 				for(RenderObject object : renderObjects)
@@ -64,7 +64,7 @@ public class RayTest
 					{
                         for(Light light : lights)
                         {
-                            //double attenuation = 4.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance); //attenutators should be placed in lights
+                            //double attenuation = 4.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance); //attenuators should be placed in lights
 							if (depth <= depthBuffer[x][y] + 0.01)
 							{
 								Vector3 lightDirection = light.directionAtPoint(intersection).negative().normalize(); //points away from surface
@@ -72,10 +72,10 @@ public class RayTest
 								Vector3 halfv = lightDirection.add(cameraDirection).normalize();
 								Vector3 normal = object.normalAtPoint(intersection);
                             
-								double dvalue = Math.max(0.0, lightDirection.dot(normal)) * light.intensityAtPoint(intersection);//attenuation;
+								Vector3 diffuseColor = light.colorIntensityAtPoint(intersection).scale(Math.max(0.0, lightDirection.dot(normal)));
 								double svalue = Math.pow(Math.max(0.0, halfv.dot(normal)), 50.0);
                             
-								color = color.add(new Vector3(svalue * 127 + dvalue * 128));
+								color = color.add(new Vector3(svalue * 127 /*+ dvalue * 128*/)).add(diffuseColor.scale(128));
 							}
                         }
 						color.x = Math.max(0, Math.min(255, color.x));
