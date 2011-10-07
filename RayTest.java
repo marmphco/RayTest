@@ -19,7 +19,8 @@ public class RayTest
 		ArrayList<RenderObject> renderObjects = new ArrayList<RenderObject>();
 		renderObjects.add(new Sphere(new Vector3(1, 1 , 10), 5));
         renderObjects.add(new Sphere(new Vector3(-5, -4 , 7), 3.5));
-		renderObjects.add(new Sphere(new Vector3(0, -1 , 15), 5));
+		renderObjects.add(new Sphere(new Vector3(0, -1, 15), 5));
+		renderObjects.add(new Triangle(new Vector3(0, 10, 10), new Vector3(20, 0, 20), new Vector3(-20, 0, 20)));
         
         ArrayList<Light> lights = new ArrayList<Light>();
         lights.add(new PointLight(new Vector3(0, -10, 0), new Vector3(.5, 1, .5), 100));
@@ -65,17 +66,20 @@ public class RayTest
                         for(Light light : lights)
                         {
                             //double attenuation = 4.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance); //attenuators should be placed in lights
-							if (depth <= depthBuffer[x][y] + 0.01)
+							if (depth <= depthBuffer[x][y] + 0.001)
 							{
 								Vector3 lightDirection = light.directionAtPoint(intersection).negative().normalize(); //points away from surface
 								Vector3 cameraDirection = camerapos.subtract(intersection).normalize();
-								Vector3 halfv = lightDirection.add(cameraDirection).normalize();
+								Vector3 halfVector = lightDirection.add(cameraDirection).normalize();
 								Vector3 normal = object.normalAtPoint(intersection);
                             
-								Vector3 diffuseColor = light.colorIntensityAtPoint(intersection).scale(Math.max(0.0, lightDirection.dot(normal)));
-								double svalue = Math.pow(Math.max(0.0, halfv.dot(normal)), 50.0);
+								double dvalue = Math.max(0.0, lightDirection.dot(normal));
+								Vector3 diffuseColor = light.colorIntensityAtPoint(intersection).scale(dvalue * 0.5);
+								
+								double svalue = Math.pow(Math.max(0.0, halfVector.dot(normal)), 50.0);
+								Vector3 specularColor = light.colorIntensityAtPoint(intersection).scale(svalue);
                             
-								color = color.add(new Vector3(svalue * 127 /*+ dvalue * 128*/)).add(diffuseColor.scale(128));
+								color = color.add(diffuseColor.add(specularColor).scale(255));
 							}
                         }
 						color.x = Math.max(0, Math.min(255, color.x));
