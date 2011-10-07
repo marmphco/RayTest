@@ -12,7 +12,8 @@ public class RayTest
 		
 		Vector3 camerapos = new Vector3(0, 0, -5);
         
-		double planeSize = 5;
+		double viewportHeight = 5;
+        double viewportWidth = aspect*viewportHeight;
 		
 		BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		
@@ -33,8 +34,8 @@ public class RayTest
 		{
 			for (int y = 0; y < height; y++)
 			{
-				double xPos = (double)(x - width/2) * aspect * planeSize / (double)(width/2);
-				double yPos = (double)(y - height/2) * planeSize / (double)(height/2);
+				double xPos = (double)(x - width/2) * viewportWidth / (double)(width/2);
+				double yPos = (double)(y - height/2) * viewportHeight / (double)(height/2);
 				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(camerapos).normalize();
 				depthBuffer[x][y] = Double.MAX_VALUE;
 				
@@ -50,8 +51,8 @@ public class RayTest
 		{
 			for (int y = 0; y < height; y++)
 			{
-				double xPos = (double)(x - width/2) * aspect * planeSize / (double)(width/2);
-				double yPos = (double)(y - height/2) * planeSize / (double)(height/2);
+				double xPos = (double)(x - width/2) * viewportWidth / (double)(width/2);
+				double yPos = (double)(y - height/2) * viewportHeight / (double)(height/2);
 				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(camerapos).normalize();
 				
 				Vector3 color = new Vector3();
