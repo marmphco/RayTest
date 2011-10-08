@@ -1,4 +1,5 @@
-public interface Light {
+public interface Light
+{
 	
     public Vector3 colorIntensityAtPoint(Vector3 point);
 	public double intensityAtPoint(Vector3 point);
