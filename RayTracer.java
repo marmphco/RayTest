@@ -9,29 +9,18 @@ public class RayTracer implements Renderer
     private int bufferWidth;
     private int bufferHeight;
     
-    //following should be consolidated into a scene object
+    private Scene scene;
     
-    private double viewportHeight;
-    private double viewportWidth;
-    private double aspectRatio;
-    
-    private ArrayList<RenderObject> renderObjects;
-    private ArrayList<Light> lights;
-    
-    private Vector3 camera;
-    
-    ///////////////////////////////////////////////////////
-    
-    public RayTracer(int _bufferWidth, int _bufferHeight, double _viewportHeight)
+    public RenderViewer renderViewer;
+        
+    public RayTracer(int _bufferWidth, int _bufferHeight, Scene _scene)
     {
         
         bufferWidth = _bufferWidth;
         bufferHeight = _bufferHeight;
         buffer = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
         
-        aspectRatio = (double)bufferWidth/(double)bufferHeight;
-        viewportHeight = _viewportHeight;
-        viewportWidth = viewportHeight*aspectRatio;
+        scene = _scene;
         
     }
     
@@ -44,14 +33,14 @@ public class RayTracer implements Renderer
 		{
 			for (int y = 0; y < bufferHeight; y++)
 			{
-				double xPos = (double)(x - bufferWidth/2) * viewportWidth / (double)(bufferWidth/2);
-				double yPos = (double)(y - bufferHeight/2) * viewportHeight / (double)(bufferHeight/2);
-				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(camera).normalize();
+				double xPos = (double)(x - bufferWidth/2) * scene.camera.viewportWidth / (double)(bufferWidth/2);
+				double yPos = (double)(y - bufferHeight/2) * scene.camera.viewportHeight / (double)(bufferHeight/2);
+				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(scene.camera.position).normalize();
 				depthBuffer[x][y] = Double.MAX_VALUE;
 				
-				for(RenderObject object : renderObjects)
+				for(RenderObject object : scene.renderObjects)
 				{
-					double depth = object.intersectionDepth(cameradir, camera);
+					double depth = object.intersectionDepth(cameradir, scene.camera.position);
 					if (depth > 0) {depthBuffer[x][y] = Math.min(depthBuffer[x][y], depth);}
 				}
 			}
@@ -61,26 +50,26 @@ public class RayTracer implements Renderer
 		{
 			for (int y = 0; y < bufferHeight; y++)
 			{
-				double xPos = (double)(x - bufferWidth/2) * viewportWidth / (double)(bufferWidth/2);
-				double yPos = (double)(y - bufferHeight/2) * viewportHeight / (double)(bufferHeight/2);
-				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(camera).normalize();
+				double xPos = (double)(x - bufferWidth/2) * scene.camera.viewportWidth / (double)(bufferWidth/2);
+				double yPos = (double)(y - bufferHeight/2) * scene.camera.viewportHeight / (double)(bufferHeight/2);
+				Vector3 cameradir = new Vector3(xPos, yPos, 0).subtract(scene.camera.position).normalize();
 				
 				Vector3 color = new Vector3();
 				
-				for(RenderObject object : renderObjects)
+				for(RenderObject object : scene.renderObjects)
 				{
 					
-					double depth = object.intersectionDepth(cameradir, camera);
-					Vector3 intersection = camera.add(cameradir.scale(depth));
+					double depth = object.intersectionDepth(cameradir, scene.camera.position);
+					Vector3 intersection = scene.camera.position.add(cameradir.scale(depth));
                     
 					if(depth <= 0) continue;
                     if(depth > depthBuffer[x][y] + 0.001) continue;
                     
-                    for(Light light : lights)
+                    for(Light light : scene.lights)
                     {
                         //double attenuation = 4.0 / (1.0 + 0.1 * distance + 0.05 * distance * distance); //attenuators should be placed in lights
                         Vector3 lightDirection = light.directionAtPoint(intersection).negative().normalize(); //points away from surface
-                        Vector3 cameraDirection = camera.subtract(intersection).normalize();
+                        Vector3 cameraDirection = scene.camera.position.subtract(intersection).normalize();
                         Vector3 halfVector = lightDirection.add(cameraDirection).normalize();
                         Vector3 normal = object.normalAtPoint(intersection);
                         
@@ -100,29 +89,18 @@ public class RayTracer implements Renderer
 				}
 				
 				buffer.setRGB(x, y, (255 << 24) | ((int)color.x << 16) | ((int)color.y << 8) | ((int)color.z << 0));
+                if(renderViewer != null) renderViewer.pixelRendered();
+                
 			}
+            if(renderViewer != null) renderViewer.lineRendered();
 		}
         
     }
     
-    public void setRenderObjects(ArrayList<RenderObject> _renderObjects)
+    public void setScene(Scene _scene)
     {
         
-        renderObjects = _renderObjects;
-        
-    }
-    
-    public void setLights(ArrayList<Light> _lights)
-    {
-        
-        lights = _lights;
-        
-    }
-    
-    public void setCamera(Vector3 _camera)
-    {
-        
-        camera = _camera;
+        scene = _scene;
         
     }
 

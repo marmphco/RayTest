@@ -3,9 +3,14 @@ import java.awt.image.BufferedImage;
 import javax.imageio.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import java.awt.event.*;
 
 public class RayTest
 {
+    
+    //temporary loophole workaround for UI
+    //this main file needs better organization
+    private static JLabel imageLabel;
     
 	public static void main(String[] args) throws IOException
 	{
@@ -14,6 +19,10 @@ public class RayTest
 		Vector3 camerapos = new Vector3(0, 0, -5);
         
 		double viewportHeight = 5;
+        double aspectRatio = (double)width/(double)height;
+        double viewportWidth = viewportHeight*aspectRatio;
+        
+        Camera camera = new Camera(camerapos, viewportWidth, viewportHeight);
 				
 		ArrayList<RenderObject> renderObjects = new ArrayList<RenderObject>();
 		renderObjects.add(new Sphere(new Vector3(1, 1 , 10), 5));
@@ -26,19 +35,21 @@ public class RayTest
         lights.add(new PointLight(new Vector3(5, 10, 0), new Vector3(1, .5, .5), 100));
         lights.add(new PointLight(new Vector3(-5, 5, 0), new Vector3(.5, .5, 1), 100));
         
-        RayTracer bob = new RayTracer(width, height, viewportHeight);
-        bob.setRenderObjects(renderObjects);
-        bob.setLights(lights);
-        bob.setCamera(camerapos);
+        Scene scene = new Scene(camera);
+        scene.setRenderObjects(renderObjects);
+        scene.setLights(lights);
         
-        //rudimentary java swing ui for viewing the output image. nothing realtime yet.
+        RayTracer bob = new RayTracer(width, height, scene);
+        bob.renderViewer = new VIURenderViewer();
+        
+        //rudimentary java swing ui for viewing the output image. nothing realtime yet. should be placed into a separate class
         JFrame window = new JFrame("Image Output");
         window.setSize(width, height);
         window.setResizable(false);
         window.addWindowListener(new VIUWindowManager());
         window.setVisible(true);
         
-        JLabel imageLabel = new JLabel(new ImageIcon(bob.buffer));
+        imageLabel = new JLabel(new ImageIcon(bob.buffer));
         window.add(imageLabel);
         
         bob.renderImage();
@@ -48,6 +59,13 @@ public class RayTest
 		saveImage(bob.buffer, "RayTest.png");
 		
 	}
+    
+    public static void updateGUI()
+    {
+        
+        imageLabel.updateUI();
+        
+    }
 	
 	public static boolean saveImage(BufferedImage image, String fileName)
 	{	
@@ -64,4 +82,35 @@ public class RayTest
 		}
 	}
 	
+}
+
+class VIUWindowManager extends WindowAdapter
+{
+    
+    public void windowClosing(WindowEvent event)
+    {
+        
+        System.exit(0);
+        
+    }
+    
+}
+
+class VIURenderViewer implements RenderViewer
+{
+    
+    public void pixelRendered()
+    {
+        
+        //RayTest.updateGUI();
+        
+    }
+    
+    public void lineRendered()
+    {
+        
+        RayTest.updateGUI();
+        
+    }
+    
 }
