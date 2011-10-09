@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<project name="RayTest" default="run" basedir=".">
+    
+    <target name="cleanBin">
+        <delete dir="bin" />
+    </target>
+    
+    <target name="makeBin" depends="cleanBin">
+        <mkdir dir="bin" />
+    </target>
+    
+    <target name="compile" depends="makeBin">
+        <javac srcdir="." destdir="bin" />
+    </target>
+    
+    <target name="jar" depends="compile">
+        <jar destFile="RayTest.jar" basedir="bin">
+            <manifest>
+                <attribute name="Main-Class" value="RayTest" />
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="run" depends="jar">
+        <java jar="RayTest.jar" fork="true" />
+    </target>
+
+</project>
