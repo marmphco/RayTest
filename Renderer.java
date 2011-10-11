@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public interface Renderer {
 
     public void renderImage();
