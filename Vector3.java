@@ -185,6 +185,36 @@ public class Vector3
         double zComponent = _vector.z * inverseLength;
         return new Vector3(xComponent, yComponent, zComponent);
     }
+	
+	/***normalize fast function***/
+    public Vector3 normalizeFast()
+    {
+        double magSquared = dot(new Vector3(x, y, z));
+        
+        long bits = Double.doubleToLongBits(magSquared);
+        bits = (((long)0x5fe6ec85 << 32) + 0xe7de30da - (bits >> 1));
+        double result = Double.longBitsToDouble(bits);
+        
+        double inverseLength = result * (1.5 - (0.5 * magSquared * result * result));
+        double xComponent = x * inverseLength;
+        double yComponent = y * inverseLength;
+        double zComponent = z * inverseLength;
+        return new Vector3(xComponent, yComponent, zComponent);
+    }
+    public static Vector3 normalizeFast(Vector3 _vector)
+    {
+        double magSquared = _vector.dot(_vector);
+        
+        long bits = Double.doubleToLongBits(magSquared);
+        bits = (((long)0x5fe6ec85 << 32) + 0xe7de30da - (bits >> 1));
+        double result = Double.longBitsToDouble(bits);
+        
+        double inverseLength = result * (1.5 - (0.5 * magSquared * result * result));
+        double xComponent = _vector.x * inverseLength;
+        double yComponent = _vector.y * inverseLength;
+        double zComponent = _vector.z * inverseLength;
+        return new Vector3(xComponent, yComponent, zComponent);
+    }
     
     public Vector3 reflect(Vector3 _axis)
     {

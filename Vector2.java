@@ -155,9 +155,37 @@ public class Vector2
         double yComponent = y * inverseLength;
         return new Vector2(xComponent, yComponent);
     }
-    public Vector2 normalize(Vector2 _vector)
+    public static Vector2 normalize(Vector2 _vector)
     {
         double inverseLength = 1.0 / magnitude(_vector);
+        double xComponent = _vector.x * inverseLength;
+        double yComponent = _vector.y * inverseLength;
+        return new Vector2(xComponent, yComponent);
+    }
+	
+	/***normalize fast function***/
+    public Vector2 normalizeFast()
+    {
+        double magSquared = dot(new Vector2(x, y));
+        
+        long bits = Double.doubleToLongBits(magSquared);
+        bits = (((long)0x5fe6ec85 << 32) + 0xe7de30da - (bits >> 1));
+        double result = Double.longBitsToDouble(bits);
+        
+        double inverseLength = result * (1.5 - (0.5 * magSquared * result * result));
+        double xComponent = x * inverseLength;
+        double yComponent = y * inverseLength;
+        return new Vector2(xComponent, yComponent);
+    }
+    public static Vector2 normalizeFast(Vector2 _vector)
+    {
+        double magSquared = _vector.dot(_vector);
+        
+        long bits = Double.doubleToLongBits(magSquared);
+        bits = (((long)0x5fe6ec85 << 32) + 0xe7de30da - (bits >> 1));
+        double result = Double.longBitsToDouble(bits);
+        
+        double inverseLength = result * (1.5 - (0.5 * magSquared * result * result));
         double xComponent = _vector.x * inverseLength;
         double yComponent = _vector.y * inverseLength;
         return new Vector2(xComponent, yComponent);
