@@ -200,4 +200,18 @@ public class Vector2
     {
         return _vector.subtract(scale(2 * (_vector.dot(_axis) / _axis.dot(_axis)), _axis));
     }
+	
+	/***refract function***/
+	public Vector2 refract(Vector2 _normal, double _index1, double _index2)
+	{
+		double scale = dot(_normal);
+		scale += Math.sqrt(_index1 * _index1 - _index2 * _index2 + scale * scale);
+		return subtract(_normal.scale(scale));
+	}
+	public static Vector2 refract(Vector2 _vector, Vector2 _normal, double _index1, double _index2)
+	{
+		double scale = _vector.dot(_normal);
+		scale += Math.sqrt(_index1 * _index1 - _index2 * _index2 + scale * scale);
+		return _vector.subtract(_normal.scale(scale));
+	}
 }
