@@ -23,18 +23,25 @@ public class RayTest
         double viewportWidth = viewportHeight*aspectRatio;
         
         Camera camera = new Camera(camerapos, viewportWidth, viewportHeight);
-				
+        
+        int wallRadius = 1000;
 		ArrayList<RenderObject> renderObjects = new ArrayList<RenderObject>();
 		renderObjects.add(new Sphere(new Vector3(1, 1 , 10), 5));
         renderObjects.add(new Sphere(new Vector3(-5, -4 , 7), 3.5));
 		renderObjects.add(new Sphere(new Vector3(0, -1, 15), 5));
+        renderObjects.add(new Sphere(new Vector3(wallRadius+20, 0, 7), wallRadius));
+        renderObjects.add(new Sphere(new Vector3(-wallRadius-20, 0, 7), wallRadius));
+        renderObjects.add(new Sphere(new Vector3(0, wallRadius+20, 7), wallRadius));
+        renderObjects.add(new Sphere(new Vector3(0, -wallRadius-20, 7), wallRadius));
+        renderObjects.add(new Sphere(new Vector3(0, 0, wallRadius+20), wallRadius));
 		renderObjects.add(new Triangle(new Vector3(0, 10, 10), new Vector3(20, 0, 20), new Vector3(-20, 0, 20)));
         
         ArrayList<Light> lights = new ArrayList<Light>();
         lights.add(new PointLight(new Vector3(0, -10, 0), new Vector3(.5, 1, .5), 100));
         lights.add(new PointLight(new Vector3(5, 10, 0), new Vector3(1, .5, .5), 100));
         lights.add(new PointLight(new Vector3(-5, 5, 0), new Vector3(.5, .5, 1), 100));
-        
+        lights.add(new PointLight(new Vector3(15, -15, 15), new Vector3(.6, .6, .6), 50));
+
         Scene scene = new Scene(camera);
         scene.setRenderObjects(renderObjects);
         scene.setLights(lights);
@@ -42,7 +49,7 @@ public class RayTest
         RayTracer bob = new RayTracer(width, height, scene);
         bob.renderViewer = new VIURenderViewer();
         
-        //rudimentary java swing ui for viewing the output image. nothing realtime yet. should be placed into a separate class
+        //rudimentary java swing ui for viewing the output image. should be placed into a separate class
         JFrame window = new JFrame("Image Output");
         window.setSize(width, height);
         window.setResizable(false);
